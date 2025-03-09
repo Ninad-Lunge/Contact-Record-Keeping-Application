@@ -1,0 +1,11 @@
+<ng-container *ngIf="showAuthNavbar; else mainNavbar">
+  <app-auth-navbar></app-auth-navbar>
+</ng-container>
+
+<ng-template #mainNavbar>
+  <app-navbar></app-navbar>
+</ng-template>
+
+<div class="container mt-1">
+  <router-outlet></router-outlet>
+</div>
