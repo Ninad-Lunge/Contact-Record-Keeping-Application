@@ -8,6 +8,9 @@ import com.example.contactRecordKeeper.security.UserPrincipal;
 import com.example.contactRecordKeeper.service.ContactService;
 import com.example.contactRecordKeeper.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,8 @@ public class ContactController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Create a new contact", description = "Adds a new contact for the authenticated user.")
+    @ApiResponse(responseCode = "201", description = "Contact created successfully")
     @PostMapping
     public ResponseEntity<ContactDTO> createContact(@CurrentUser UserPrincipal currentUser,
                                                     @Valid @RequestBody ContactDTO contactDTO) {
@@ -39,6 +44,8 @@ public class ContactController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapContactToDTO(contact));
     }
 
+    @Operation(summary = "Get all contacts", description = "Retrieves all contacts for the authenticated user.")
+    @ApiResponse(responseCode = "200", description = "Contacts retrieved successfully")
     @GetMapping
     public ResponseEntity<List<ContactDTO>> getAllContacts(@CurrentUser UserPrincipal currentUser) {
         User user = userService.getUserByUsername(currentUser.getUsername());
@@ -53,6 +60,11 @@ public class ContactController {
         return ResponseEntity.ok(contactDTOs);
     }
 
+    @Operation(summary = "Get a contact by ID", description = "Retrieves a specific contact by ID for the authenticated user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Contact not found")
+    })
     @GetMapping("/{contactId}")
     public ResponseEntity<?> getContactById(@PathVariable Long contactId,
                                             @CurrentUser UserPrincipal currentUser) {
@@ -69,6 +81,11 @@ public class ContactController {
         }
     }
 
+    @Operation(summary = "Update a contact", description = "Updates an existing contact for the authenticated user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Contact not found")
+    })
     @PutMapping("/{contactId}")
     public ResponseEntity<?> updateContact(@PathVariable Long contactId,
                                            @Valid @RequestBody ContactDTO contactDTO,
@@ -86,6 +103,11 @@ public class ContactController {
         }
     }
 
+    @Operation(summary = "Delete a contact", description = "Deletes a specific contact by ID for the authenticated user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Contact not found")
+    })
     @DeleteMapping("/{contactId}")
     public ResponseEntity<Map<String, Object>> deleteContact(@PathVariable Long contactId,
                                                              @CurrentUser UserPrincipal currentUser) {
@@ -97,6 +119,8 @@ public class ContactController {
                 : buildErrorResponse(HttpStatus.NOT_FOUND, "Contact not found");
     }
 
+    @Operation(summary = "Delete all contacts", description = "Deletes all contacts for the authenticated user.")
+    @ApiResponse(responseCode = "200", description = "All contacts deleted successfully")
     @DeleteMapping
     public ResponseEntity<Map<String, Object>> deleteAllContacts(@CurrentUser UserPrincipal currentUser) {
         User user = userService.getUserByUsername(currentUser.getUsername());

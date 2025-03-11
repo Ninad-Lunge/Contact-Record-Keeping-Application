@@ -5,6 +5,9 @@ import com.example.contactRecordKeeper.model.User;
 import com.example.contactRecordKeeper.security.CurrentUser;
 import com.example.contactRecordKeeper.security.UserPrincipal;
 import com.example.contactRecordKeeper.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Get current user details", description = "Retrieves the authenticated user's details.")
+    @ApiResponse(responseCode = "200", description = "User details retrieved successfully")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         User user = userService.getUserByUsername(currentUser.getUsername());
@@ -30,6 +35,11 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
+    @Operation(summary = "Update current user details", description = "Updates the authenticated user's details.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PutMapping("/me")
     public ResponseEntity<UserDTO> updateCurrentUser(@CurrentUser UserPrincipal currentUser,
                                                      @Valid @RequestBody UserDTO userDTO) throws BadRequestException {
