@@ -1,5 +1,6 @@
 package com.example.contactRecordKeeper.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -54,5 +55,13 @@ public class GlobalExceptionHandler {
         response.put("success", false);
         response.put("message", message);
         return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists!");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error occurred!");
     }
 }

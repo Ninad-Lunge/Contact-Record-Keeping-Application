@@ -87,23 +87,6 @@ public class User implements Serializable {
         this.contacts = contacts;
     }
 
-    // Helper method to add contact
-    public void addContact(Contact contact) {
-        if (contacts == null) {
-            contacts = new ArrayList<>();
-        }
-        contacts.add(contact);
-        contact.setUser(this);
-    }
-
-    // Helper method to remove contact
-    public void removeContact(Contact contact) {
-        if (contacts != null) {
-            contacts.remove(contact);
-            contact.setUser(null);
-        }
-    }
-
     // Equals and HashCode
     @Override
     public boolean equals(Object o) {

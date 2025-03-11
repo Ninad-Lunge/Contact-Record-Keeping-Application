@@ -62,7 +62,7 @@
   </div>
 
   <!-- Filter Section -->
-  <!-- <div class="container border p-2 rounded mb-3">
+  <div class="container border p-2 rounded mb-3">
     <h6>Filter Contacts</h6>
     <div class="row">
       <div class="col-md-4">
@@ -90,7 +90,7 @@
         />
       </div>
     </div>
-  </div> -->
+  </div>
 
   <!-- Contacts Table -->
   <div class="container border rounded">
@@ -150,5 +150,27 @@
         Delete All Contacts
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div
+    *ngIf="toastMessage"
+    class="toast show"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="toast-header">
+      <h6 class="me-auto text-{{toastColor}}">{{ toastTitle }}</h6>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="hideToast()"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="toast-body">{{ toastMessage }}</div>
   </div>
 </div>
