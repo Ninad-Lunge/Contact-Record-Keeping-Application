@@ -1,66 +1,106 @@
 <div class="container">
-  <div class="mb-3">
-    <div class="container border p-2 rounded">
-      <div class="row">
-        <div class="col-md-6">
-          <input
-            type="text"
-            class="form-control mb-2"
-            [(ngModel)]="selectedContact.firstName"
-            placeholder="First Name"
-          />
+  <form #contactForm="ngForm">
+    <div class="mb-3">
+      <div class="container border p-2 rounded">
+        <div class="row">
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control mb-2"
+              [(ngModel)]="selectedContact.firstName"
+              name="firstName"
+              placeholder="First Name"
+              required
+              #firstNameInput="ngModel"
+            />
+            <div *ngIf="firstNameInput.invalid && (firstNameInput.dirty || firstNameInput.touched)" class="text-danger mt-1">
+              <small *ngIf="firstNameInput.errors?.['required']">First Name is required</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control mb-2"
+              [(ngModel)]="selectedContact.lastName"
+              name="lastName"
+              placeholder="Last Name"
+              required
+              #lastNameInput="ngModel"
+            />
+            <div *ngIf="lastNameInput.invalid && (lastNameInput.dirty || lastNameInput.touched)" class="text-danger mt-1">
+              <small *ngIf="lastNameInput.errors?.['required']">Last Name is required</small>
+            </div>
+          </div>
         </div>
-        <div class="col-md-6">
-          <input
-            type="text"
-            class="form-control mb-2"
-            [(ngModel)]="selectedContact.lastName"
-            placeholder="Last Name"
-          />
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <input
-            type="email"
-            class="form-control mb-2"
-            [(ngModel)]="selectedContact.email"
-            placeholder="Email"
-          />
+        <div class="row">
+          <div class="col-md-6">
+            <input
+              type="email"
+              class="form-control mb-2"
+              [(ngModel)]="selectedContact.email"
+              name="email"
+              placeholder="Email"
+              required
+              email
+              #emailInput="ngModel"
+            />
+            <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger mt-1">
+              <small *ngIf="emailInput.errors?.['required']">Email is required</small>
+              <small *ngIf="emailInput.errors?.['email']">Please enter a valid email address</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control mb-2"
+              [(ngModel)]="selectedContact.phone"
+              name="phone"
+              placeholder="Phone"
+              required
+              pattern="^[0-9]{10,15}$"
+              #phoneInput="ngModel"
+            />
+            <div *ngIf="phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)" class="text-danger mt-1">
+              <small *ngIf="phoneInput.errors?.['required']">Phone number is required</small>
+              <small *ngIf="phoneInput.errors?.['pattern']">Please enter a valid phone number (10-15 digits)</small>
+            </div>
+          </div>
         </div>
-        <div class="col-md-6">
-          <input
-            type="text"
-            class="form-control mb-2"
-            [(ngModel)]="selectedContact.phone"
-            placeholder="Phone"
-          />
-        </div>
-      </div>
 
-      <!-- Button Row -->
-      <div class="row">
-        <div class="col text-end mt-1">
-          <button
-            *ngIf="!isEditing"
-            class="btn btn-success me-2"
-            (click)="addContact()"
-          >
-            Add Contact
-          </button>
-          <button
-            *ngIf="isEditing"
-            class="btn btn-primary"
-            (click)="updateContact()"
-          >
-            Update Contact
-          </button>
+        <!-- Button Row -->
+        <div class="row">
+          <div class="col text-end mt-1">
+            <button
+              *ngIf="!isEditing"
+              class="btn btn-success me-2"
+              (click)="addContact()"
+              [disabled]="contactForm.invalid"
+            >
+              Add Contact
+            </button>
+            <button
+              *ngIf="isEditing"
+              class="btn btn-primary"
+              (click)="updateContact()"
+              [disabled]="contactForm.invalid"
+            >
+              Update Contact
+            </button>
+            <button
+              *ngIf="isEditing"
+              class="btn btn-secondary ms-2"
+              (click)="clearForm()"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 
+  <!-- Rest of the template unchanged -->
   <!-- Filter Section -->
   <div class="container border p-2 rounded mb-3">
     <h6>Filter Contacts</h6>

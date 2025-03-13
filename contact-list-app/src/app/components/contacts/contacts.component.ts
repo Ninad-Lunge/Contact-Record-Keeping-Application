@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ContactService } from '../../services/contact.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-contacts',
@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./contacts.component.css']
 })
 export class ContactsComponent implements OnInit {
+  @ViewChild('contactForm') contactForm!: NgForm;
+  
   contacts: any[] = [];
   selectedContact = { contactId: null, firstName: '', lastName: '', email: '', phone: '' };
   isEditing: boolean = false;
@@ -21,8 +23,8 @@ export class ContactsComponent implements OnInit {
   toastTitle: string = '';
   toastColor: string = '';
 
-  errorMessage: string = ''; // Store error messages
-  isLoading: boolean = false; // Indicate loading state
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
   constructor(private contactService: ContactService) {}
 
@@ -69,8 +71,13 @@ export class ContactsComponent implements OnInit {
         this.showToast('Success', 'Contact added successfully!', 'success');
       },
       (error) => {
-        this.errorMessage = 'Failed to add contact. Please check your input and try again.';
-        this.showToast('Error', 'Failed to add contact.', 'danger');
+        if (error.error?.error?.includes('already exists')) {
+          this.errorMessage = 'A contact with this phone number already exists.';
+          this.showToast('Error', this.errorMessage, 'danger');
+        } else {
+          this.errorMessage = 'Failed to add contact. Please check your input and try again.';
+          this.showToast('Error', 'Failed to add contact.', 'danger');
+        }
         console.error('Error adding contact:', error);
       }
     );
@@ -152,6 +159,11 @@ export class ContactsComponent implements OnInit {
     this.selectedContact = { contactId: null, firstName: '', lastName: '', email: '', phone: '' };
     this.isEditing = false;
     this.errorMessage = ''; // Clear error message when resetting form
+    
+    // Reset form validation state if form is available
+    if (this.contactForm) {
+      this.contactForm.resetForm();
+    }
   }
 
   filters = { name: '', email: '', phone: '' };

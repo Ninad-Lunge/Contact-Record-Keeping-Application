@@ -28,7 +28,6 @@ export class ContactService {
     return this.http.delete(`${this.apiUrl}/${contactId}`);
   }
 
-  // New method to handle potential bulk delete in the future
   deleteMultipleContacts(contactIds: number[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/bulk-delete`, contactIds);
   }

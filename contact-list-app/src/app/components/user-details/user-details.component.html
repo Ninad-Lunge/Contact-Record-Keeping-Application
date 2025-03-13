@@ -1,0 +1,36 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0 text-center">About Me</h5>
+        </div>
+        <div class="card-body" *ngIf="user">
+          <div class="row mb-3">
+            <div class="col-4 text-muted text-end">Name:</div>
+            <div class="col-8 fw-bold">{{ user.firstName }} {{user.lastName}}</div>
+          </div>
+          <div class="row">
+            <div class="col-4 text-muted text-end">Email:</div>
+            <div class="col-8">{{ user.email }}</div>
+          </div>
+          <!-- <div class="row">
+            <div class="col-4 text-muted text-end">Username:</div>
+            <div class="col-8">{{ user.username }}</div>
+          </div> -->
+        </div>
+        <div class="card-body text-center" *ngIf="!user">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading user details...</p>
+        </div>
+      </div>
+
+      <!-- <p class="text-center mt-4 border rounded p-2"  style="cursor: pointer;"></p> -->
+      <div class="text-center">
+        <button class="btn btn-outline-dark mt-5" style="width: 350px;" [routerLink]="['/']">Return to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
