@@ -1,6 +1,7 @@
 package com.example.contactRecordKeeper.controller;
 
 import com.example.contactRecordKeeper.dto.ContactDTO;
+import com.example.contactRecordKeeper.exception.GlobalExceptionHandler;
 import com.example.contactRecordKeeper.model.Contact;
 import com.example.contactRecordKeeper.model.User;
 import com.example.contactRecordKeeper.security.CurrentUser;
@@ -37,11 +38,16 @@ public class ContactController {
     @Operation(summary = "Create a new contact", description = "Adds a new contact for the authenticated user.")
     @ApiResponse(responseCode = "201", description = "Contact created successfully")
     @PostMapping
-    public ResponseEntity<ContactDTO> createContact(@CurrentUser UserPrincipal currentUser,
-                                                    @Valid @RequestBody ContactDTO contactDTO) {
-        User user = userService.getUserByUsername(currentUser.getUsername());
-        Contact contact = contactService.createContact(user, contactDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapContactToDTO(contact));
+    public ResponseEntity<?> createContact(@CurrentUser UserPrincipal currentUser,
+                                           @Valid @RequestBody ContactDTO contactDTO) {
+        try {
+            User user = userService.getUserByUsername(currentUser.getUsername());
+            Contact contact = contactService.createContact(user, contactDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(mapContactToDTO(contact));
+        } catch (GlobalExceptionHandler.DuplicateEntryException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", e.getMessage())); // Return error as JSON
+        }
     }
 
     @Operation(summary = "Get all contacts", description = "Retrieves all contacts for the authenticated user.")

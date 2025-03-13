@@ -27,6 +27,16 @@ public class ContactDAO {
         return Optional.ofNullable(contact);
     }
 
+    public Optional<Contact> findByUserAndPhone(User user, String phone) {
+        List<Contact> contacts = entityManager.createQuery(
+                        "SELECT c FROM Contact c WHERE c.user = :user AND c.phone = :phone", Contact.class)
+                .setParameter("user", user)
+                .setParameter("phone", phone)
+                .getResultList();
+
+        return contacts.isEmpty() ? Optional.empty() : Optional.of(contacts.get(0));
+    }
+
     public List<Contact> findByUser(User user) {
         return entityManager.createQuery("SELECT c FROM Contact c WHERE c.user = :user", Contact.class)
                 .setParameter("user", user)

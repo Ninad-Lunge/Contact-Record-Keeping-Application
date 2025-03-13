@@ -1,10 +1,12 @@
 package com.example.contactRecordKeeper.service;
 
 import com.example.contactRecordKeeper.dto.ContactDTO;
+import com.example.contactRecordKeeper.exception.GlobalExceptionHandler;
 import com.example.contactRecordKeeper.model.Contact;
 import com.example.contactRecordKeeper.model.User;
 import com.example.contactRecordKeeper.repository.ContactDAO;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +22,21 @@ public class ContactService {
     }
 
     public Contact createContact(User user, @Valid ContactDTO contactDTO) {
+        // Check if a contact with the same phone already exists for the user
+        Optional<Contact> existingContact = contactDAO.findByUserAndPhone(user, contactDTO.getPhone());
+
+        if (existingContact.isPresent()) {
+            throw new GlobalExceptionHandler.DuplicateEntryException("Contact with this phone number already exists for this user.");
+        }
+
+        // Proceed with saving the new contact
         Contact contact = new Contact();
         contact.setUser(user);
         contact.setFirstName(contactDTO.getFirstName());
         contact.setLastName(contactDTO.getLastName());
         contact.setEmail(contactDTO.getEmail());
         contact.setPhone(contactDTO.getPhone());
+
         return contactDAO.save(contact);
     }
 

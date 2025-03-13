@@ -11,7 +11,8 @@ import java.util.Objects;
 
 @Getter
 @Entity
-@Table(name = "contacts")
+@Table(name = "contacts",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "phone"})) // Ensures unique contacts per user
 public class Contact implements Serializable {
     // Getters and Setters
     @Id
@@ -27,9 +28,10 @@ public class Contact implements Serializable {
 
     private String lastName;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String email;
 
+//    @Column(unique = true, nullable = false)
     private String phone;
 
     @Column(updatable = false)
@@ -73,7 +75,7 @@ public class Contact implements Serializable {
         this.phone = phone;
     }
 
-    // Convenient method to get full name
+    // Method to get full name
     public String getFullName() {
         return firstName + (lastName != null ? " " + lastName : "");
     }
@@ -111,7 +113,7 @@ public class Contact implements Serializable {
                 '}';
     }
 
-    // Builder pattern for easy contact creation
+    // Builder pattern contact creation
     public static class ContactBuilder {
         private Contact contact = new Contact();
 

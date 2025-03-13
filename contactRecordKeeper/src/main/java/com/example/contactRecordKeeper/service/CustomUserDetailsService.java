@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         // Search for user by username or email using UserDAO
         User user = userDAO.findByUsername(usernameOrEmail)
-                .or(() -> userDAO.findByEmail(usernameOrEmail)) // Check both username and email
+                .or(() -> userDAO.findByEmail(usernameOrEmail))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail));
 
         return UserPrincipal.create(user);
