@@ -14,10 +14,9 @@
             <div class="col-4 text-muted text-end">Email:</div>
             <div class="col-8">{{ user.email }}</div>
           </div>
-          <!-- <div class="row">
-            <div class="col-4 text-muted text-end">Username:</div>
-            <div class="col-8">{{ user.username }}</div>
-          </div> -->
+          <div class="text-center mt-3">
+            <button class="btn btn-outline-dark" (click)="openEditModal(editModal)">Edit Profile</button>
+          </div>
         </div>
         <div class="card-body text-center" *ngIf="!user">
           <div class="spinner-border text-primary" role="status">
@@ -26,11 +25,38 @@
           <p class="mt-2">Loading user details...</p>
         </div>
       </div>
-
-      <!-- <p class="text-center mt-4 border rounded p-2"  style="cursor: pointer;"></p> -->
+      
       <div class="text-center">
         <button class="btn btn-outline-dark mt-5" style="width: 350px;" [routerLink]="['/']">Return to Home</button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Edit Profile Modal -->
+<ng-template #editModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Edit Profile</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form #editProfileForm="ngForm">
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" id="firstName" class="form-control" [(ngModel)]="user.firstName" name="firstName" required />
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" id="lastName" class="form-control" [(ngModel)]="user.lastName" name="lastName" required />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" [(ngModel)]="user.email" name="email" required />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('Cancel click')">Cancel</button>
+    <button type="button" class="btn btn-outline-primary" (click)="updateProfile(); modal.close()">Save Changes</button>
+  </div>
+</ng-template>
