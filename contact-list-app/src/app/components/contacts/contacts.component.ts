@@ -111,7 +111,10 @@ export class ContactsComponent implements OnInit {
       console.error("Invalid contactId: ", contactId);
       return;
     }
-    
+  
+    const confirmation = window.confirm("Are you sure you want to delete this contact?");
+    if (!confirmation) return;
+  
     this.contactService.deleteContact(contactId).subscribe(
       () => {
         this.loadContacts();
@@ -126,6 +129,9 @@ export class ContactsComponent implements OnInit {
   }
   
   deleteAllContacts(): void {
+    const confirmation = window.confirm("Are you sure you want to delete all contacts?");
+    if (!confirmation) return;
+  
     let deleteRequests = this.contacts.map(contact => 
       this.contactService.deleteContact(contact.contactId).toPromise()
     );

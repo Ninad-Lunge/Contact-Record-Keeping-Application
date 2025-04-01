@@ -13,6 +13,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserDetailsComponent implements OnInit {
   user: any;
+  
+  toastMessage: string = '';
+  toastTitle: string = '';
+  toastColor: string = '';
 
   constructor(private userService: UserService, private modalService: NgbModal) {}
 
@@ -31,18 +35,29 @@ export class UserDetailsComponent implements OnInit {
   }  
 
   updateProfile() {
-    this.userService.updateUserProfile(this.user).subscribe(() => {
-      alert('Profile updated successfully!');
-      this.loadUser();
-      // this.closeModal();
-    });
+    this.userService.updateUserProfile(this.user).subscribe(
+      () => {
+        this.showToast('Success', 'Profile updated successfully!', 'success');
+        this.loadUser();
+      },
+      (error) => {
+        this.showToast('Error', 'Failed to update profile.', 'danger');
+        console.error('Error updating profile:', error);
+      }
+    );
   }
 
-  // closeModal() {
-  //   const modalElement = document.getElementById('editProfileModal');
-  //   if (modalElement) {
-  //     const modal = bootstrap.Modal.getInstance(modalElement);
-  //     modal.hide();
-  //   }
-  // }
+  showToast(title: string, message: string, color: string) {
+    this.toastTitle = title;
+    this.toastMessage = message;
+    this.toastColor = color;
+
+    setTimeout(() => {
+      this.hideToast();
+    }, 5000);
+  }
+
+  hideToast() {
+    this.toastMessage = '';
+  }
 }
