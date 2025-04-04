@@ -32,4 +32,9 @@ export class AuthService {
   storeToken(token: string): void {
     localStorage.setItem('token', token);
   }
+
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+    return !!token;
+  }
 }
