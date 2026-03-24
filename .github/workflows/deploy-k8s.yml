@@ -1,0 +1,74 @@
+name: Deploy To Kubernetes
+
+on:
+  workflow_run:
+    workflows:
+      - Build Images
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Docker image tag to deploy. Defaults to latest.
+        required: false
+        default: latest
+
+env:
+  K8S_NAMESPACE: contact-record
+  BACKEND_IMAGE_NAME: contact-record-backend
+  FRONTEND_IMAGE_NAME: contact-record-frontend
+
+jobs:
+  deploy:
+    name: Deploy
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+    environment: production
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Verify kubectl access
+        run: kubectl get nodes
+
+      - name: Resolve image tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.image_tag }}" ]; then
+            TAG="${{ github.event.inputs.image_tag }}"
+          elif [ "${{ github.event_name }}" = "workflow_run" ]; then
+            TAG="${{ github.event.workflow_run.head_sha }}"
+          else
+            TAG="latest"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "backend_image=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.BACKEND_IMAGE_NAME }}:$TAG" >> "$GITHUB_OUTPUT"
+          echo "frontend_image=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -k k8s/
+
+      - name: Update backend image
+        run: |
+          kubectl set image deployment/backend \
+            backend=${{ steps.meta.outputs.backend_image }} \
+            -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Update frontend image
+        run: |
+          kubectl set image deployment/frontend \
+            frontend=${{ steps.meta.outputs.frontend_image }} \
+            -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Wait for PostgreSQL rollout
+        run: kubectl rollout status deployment/postgres -n ${{ env.K8S_NAMESPACE }} --timeout=180s
+
+      - name: Wait for backend rollout
+        run: kubectl rollout status deployment/backend -n ${{ env.K8S_NAMESPACE }} --timeout=300s
+
+      - name: Wait for frontend rollout
+        run: kubectl rollout status deployment/frontend -n ${{ env.K8S_NAMESPACE }} --timeout=300s

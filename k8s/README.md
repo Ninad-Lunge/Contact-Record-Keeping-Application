@@ -431,33 +431,35 @@ This repository is suitable as a local and lab deployment baseline. For producti
 
 ## GitHub Actions CI/CD
 
-This repository includes a GitHub Actions workflow at `.github/workflows/ci-cd.yml`.
+This repository includes two GitHub Actions workflows:
 
-The pipeline is split into three jobs:
-
-1. `validate`
-2. `build-and-push`
-3. `deploy`
+- `.github/workflows/build-images.yml`
+- `.github/workflows/deploy-k8s.yml`
 
 ### What the pipeline does
 
-On pull requests to `main`:
+`build-images.yml` on pull requests to `main`:
 
 - validates the Kubernetes manifests with `kubectl kustomize`
 - runs backend tests
 - builds the frontend
 
-On pushes to `main` and manual runs:
+`build-images.yml` on pushes to `main` and manual runs:
 
 - runs the same validation
 - builds and pushes Docker images to Docker Hub
-- deploys the new image tags to the Kubernetes cluster
 
-### Why the deploy job uses a self-hosted runner
+`deploy-k8s.yml`:
+
+- runs automatically after a successful `Build Images` workflow
+- can also be started manually
+- deploys the selected image tags to the Kubernetes cluster
+
+### Why the deploy workflow uses a self-hosted runner
 
 Your Multipass cluster is on a private network, typically with node IPs like `10.x.x.x`.
 
-GitHub-hosted runners usually cannot reach that network directly. Because of that, the deploy job is designed to run on a self-hosted GitHub Actions runner installed on the Multipass `master` node or another machine that already has:
+GitHub-hosted runners usually cannot reach that network directly. Because of that, the deploy workflow is designed to run on a self-hosted GitHub Actions runner installed on the Multipass `master` node or another machine that already has:
 
 - network access to the cluster
 - `kubectl`
@@ -504,7 +506,7 @@ working successfully under the same user that runs the GitHub Actions runner ser
 
 ### Deployment behavior
 
-The deploy job does this:
+The deploy workflow does this:
 
 1. checks out the repository
 2. runs `kubectl apply -k k8s/`
@@ -518,10 +520,16 @@ This means you can continue keeping environment config in the manifests while us
 
 Your checked-in manifests may still contain fixed image tags such as `v1`.
 
-That is fine because the deploy job overwrites the deployed image tags at runtime with:
+That is fine because the deploy workflow overwrites the deployed image tags at runtime with:
 
 - `DOCKERHUB_USERNAME/contact-record-backend:${GITHUB_SHA}`
 - `DOCKERHUB_USERNAME/contact-record-frontend:${GITHUB_SHA}`
+
+For manual deploys, `deploy-k8s.yml` also accepts an `image_tag` input so you can roll out:
+
+- `latest`
+- a specific Git commit SHA tag
+- any other tag you pushed intentionally
 
 ### First-time bootstrap before CI/CD
 
