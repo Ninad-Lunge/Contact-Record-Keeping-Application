@@ -1,0 +1,14 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: contact-record-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 10.62.102.200ku-10.62.102.210
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: contact-record-l2
+  namespace: metallb-system

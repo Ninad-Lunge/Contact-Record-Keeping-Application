@@ -1,59 +1,68 @@
-# ContactListApp
+# Frontend Development Guide
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+This directory contains the Angular frontend for the Contact Record Keeping Application.
 
-## Development server
+## Local Development
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Install dependencies:
 
 ```bash
-ng generate component component-name
+npm ci
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Start the dev server:
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+Open:
 
-To build the project run:
+```text
+http://localhost:4200
+```
+
+## Build
+
+Create a production build:
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build artifacts are generated under:
 
-## Running unit tests
+```text
+dist/contact-list-app
+```
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Tests
+
+Run frontend tests:
 
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
+## Environment Behavior
 
-For end-to-end (e2e) testing, run:
+- development uses `src/environments/environment.ts`
+- production uses `src/environments/environment.prod.ts`
 
-```bash
-ng e2e
-```
+Production builds use `/api` as the backend base path so the frontend can sit behind Kubernetes ingress and nginx proxying.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Container Build
 
-## Additional Resources
+The frontend container is built with:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [frontend/Dockerfile](/home/ninad/Projects/Contact-Record-Keeping-Application/frontend/Dockerfile)
+
+It:
+
+1. builds the Angular app
+2. serves the static files with nginx
+3. proxies `/api/*` to the backend service
+
+nginx config:
+
+- [frontend/nginx/default.conf](/home/ninad/Projects/Contact-Record-Keeping-Application/frontend/nginx/default.conf)

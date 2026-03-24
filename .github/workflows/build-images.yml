@@ -4,9 +4,17 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/build-images.yml'
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/build-images.yml'
   workflow_dispatch:
 
 env:

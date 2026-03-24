@@ -1,6 +1,12 @@
 name: Deploy To Kubernetes
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/deploy-k8s.yml'
   workflow_run:
     workflows:
       - Build Images
@@ -21,7 +27,7 @@ env:
 jobs:
   deploy:
     name: Deploy
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
     runs-on:
       - self-hosted
       - linux
